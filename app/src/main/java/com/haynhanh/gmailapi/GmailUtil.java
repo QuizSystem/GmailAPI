@@ -3,6 +3,8 @@ package com.haynhanh.gmailapi;
 /**
  * Created by thieumao on 1/29/17.
  */
+import android.util.Log;
+
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Label;
@@ -52,6 +54,7 @@ public class GmailUtil {
         return message;
     }
 
+    // TODO: Get show detail email
     public static Message getMessage(Gmail service, String userId, String messageId, String format) throws IOException {
         Message message = null;
         if(format != null && !format.isEmpty()) {
@@ -65,6 +68,7 @@ public class GmailUtil {
         System.out.println("Message raw: " + Util.base64UrlDecode(message.getRaw()));
         System.out.println("Message raw Base64 android: " + Base64.encodeBase64URLSafeString(message.decodeRaw()));
         System.out.println("-----------------------------------------------****");
+        Log.e("mao", "mao " + message.getSnippet());
 
         return message;
     }
