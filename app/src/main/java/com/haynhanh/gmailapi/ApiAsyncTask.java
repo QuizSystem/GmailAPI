@@ -24,8 +24,10 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
     private GoogleAccountCredential credential;
 
     private static final String USER_ID = "me";
-    private static final String TO = "test.caramelo@gmail.com";
-    private static final String FROM = "test.caramelo@gmail.com";
+    private static final String TO = "leoski94@gmail.com";
+    private static final String FROM = "thieumao@gmail.com";
+    private static final String SUBJECT = "My title";
+    private static final String BODY = "This email is from Thieu Mao";
 
     ApiAsyncTask(TestActivity activity, GoogleAccountCredential credential) {
         this.mActivity = activity;
@@ -59,7 +61,7 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
                 GmailUtil.getMessage(mActivity.mService, USER_ID, messages.get(0).getId(), "raw");
             }
 
-            GmailUtil.sendMessage(mActivity.mService, USER_ID, GmailUtil.createEmail(TO, FROM, "Subject", "Body"));
+            GmailUtil.sendMessage(mActivity.mService, USER_ID, GmailUtil.createEmail(TO, FROM, SUBJECT, BODY));
 
         } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
             mActivity.showGooglePlayServicesAvailabilityErrorDialog(
@@ -103,9 +105,7 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
      */
     public List<Message> listAllMessages(String userId) throws IOException {
         System.out.println("listMessagesWithLabels");
-
         ListMessagesResponse response = mActivity.mService.users().messages().list(userId).execute();
-
         List<Message> messages = new ArrayList<Message>();
         while (response.getMessages() != null) {
             messages.addAll(response.getMessages());
@@ -117,11 +117,9 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
                 break;
             }
         }
-
         for (Message message : messages) {
             System.out.println(message.toPrettyString());
         }
-
         return messages;
     }
 }
