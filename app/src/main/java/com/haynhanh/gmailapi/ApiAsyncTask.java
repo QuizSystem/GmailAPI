@@ -59,7 +59,7 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
             List<Message> messages = listAllMessages(USER_ID);
             // TODO: Get all email from inbox
             if(messages != null && messages.size() > 0){
-                for (int i = 0; i<messages.size(); i++) {
+                for (int i = 0; i<messages.size() && i<10; i++) {
                     GmailUtil.getMessage(mActivity.mService, USER_ID, messages.get(i).getId(), "raw");
                 }
             }

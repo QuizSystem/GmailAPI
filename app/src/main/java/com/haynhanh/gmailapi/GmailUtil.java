@@ -68,8 +68,27 @@ public class GmailUtil {
         System.out.println("Message raw: " + Util.base64UrlDecode(message.getRaw()));
         System.out.println("Message raw Base64 android: " + Base64.encodeBase64URLSafeString(message.decodeRaw()));
         System.out.println("-----------------------------------------------****");
-        Log.e("mao", "mao " + message.getSnippet());
-
+        Log.e("mao", "mao message.getSnippet " + message.getSnippet()); // noi dung mail
+        Log.e("mao", "mao Util.base64UrlDecode " + Util.base64UrlDecode(message.getRaw()));
+        Log.e("mao", "mao Base64.encodeBase64URLSafeString " + Base64.encodeBase64URLSafeString(message.decodeRaw() ));
+        String raw = Util.base64UrlDecode(message.getRaw());
+        String[] parts = raw.split("\n");
+        for (int i=0; i<parts.length && i < 50; i++) {
+            Log.e("cat","cat" + i + " " + parts[i]);
+            if(parts[i].startsWith("Subject: ")){
+                Log.e("Subject", "Mao Subject: " + parts[i]);
+            }
+            if(parts[i].startsWith("From:")){
+                Log.e("From", "Mao From: " + parts[i]);
+            }
+            if(parts[i].startsWith("To: ")){
+                Log.e("To", "Mao To: " + parts[i]);
+            }
+            if(parts[i].startsWith("Date: ")){
+                Log.e("Date", "Mao Date: " + parts[i]);
+            }
+        }
+        Log.e("mao", "mao noi dung mail " + message.getSnippet());
         return message;
     }
 
