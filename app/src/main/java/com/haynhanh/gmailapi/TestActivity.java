@@ -183,7 +183,7 @@ public class TestActivity extends Activity {
             chooseAccount();
         } else {
             if (isDeviceOnline()) {
-                new ApiAsyncTask(this, credential).execute();
+//                new ApiAsyncTask(this, credential).execute();
             } else {
                 mStatusText.setText("No network connection available.");
             }
