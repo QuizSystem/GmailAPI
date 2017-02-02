@@ -7,7 +7,9 @@ import android.util.Log;
 
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.Filter;
 import com.google.api.services.gmail.model.Label;
+import com.google.api.services.gmail.model.ListFiltersResponse;
 import com.google.api.services.gmail.model.ListLabelsResponse;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
@@ -62,7 +64,9 @@ public class GmailUtil {
         } else {
             message = service.users().messages().get(userId, messageId).execute();
         }
-
+        ListFiltersResponse users=service.users().settings().filters().list(userId).execute();
+        Filter filter=service.users().settings().filters().get(userId,users.getFilter().get(0).getId()).execute();
+        Log.e("TAG:",users.toPrettyString());
         System.out.println("Message snippet: " + message.getSnippet());
         System.out.println("-----------------------------------------------****");
         System.out.println("Message raw: " + Util.base64UrlDecode(message.getRaw()));
@@ -73,7 +77,7 @@ public class GmailUtil {
         Log.e("mao", "mao Base64.encodeBase64URLSafeString " + Base64.encodeBase64URLSafeString(message.decodeRaw() ));
         String raw = Util.base64UrlDecode(message.getRaw());
         String[] parts = raw.split("\n");
-        for (int i=0; i<parts.length && i < 50; i++) {
+        for (int i=0; i<parts.length && i < 2; i++) {
             Log.e("cat","cat" + i + " " + parts[i]);
             if(parts[i].startsWith("Subject: ")){
                 Log.e("Subject", "Mao Subject: " + parts[i]);
@@ -168,6 +172,8 @@ public class GmailUtil {
 
         return messages;
     }
+
+
 
 
     public static List<String> getLabels(Gmail service, String userId){

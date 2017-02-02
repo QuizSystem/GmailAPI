@@ -34,6 +34,7 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
         this.credential = credential;
     }
 
+
     /**
      * Background task to call Gmail API.
      * @param params no parameters needed for this task.
@@ -54,17 +55,17 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
 
         try {
             mActivity.clearResultsText();
-            mActivity.updateResultsText(getDataFromApi());
+//            mActivity.updateResultsText(getDataFromApi());
 
             List<Message> messages = listAllMessages(USER_ID);
             // TODO: Get all email from inbox
             if(messages != null && messages.size() > 0){
-                for (int i = 0; i<messages.size() && i<10; i++) {
+                for (int i = 0;i<2; i++) {
                     GmailUtil.getMessage(mActivity.mService, USER_ID, messages.get(i).getId(), "raw");
                 }
             }
 
-            GmailUtil.sendMessage(mActivity.mService, USER_ID, GmailUtil.createEmail(TO, FROM, SUBJECT, BODY));
+         //   GmailUtil.sendMessage(mActivity.mService, USER_ID, GmailUtil.createEmail(TO, FROM, SUBJECT, BODY));
 
         } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
             mActivity.showGooglePlayServicesAvailabilityErrorDialog(
@@ -110,7 +111,9 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
         System.out.println("listMessagesWithLabels");
         ListMessagesResponse response = mActivity.mService.users().messages().list(userId).execute();
         List<Message> messages = new ArrayList<Message>();
-        while (response.getMessages() != null) {
+        int dem = 0;
+        while (response.getMessages() != null && dem < 2) {
+            dem++;
             messages.addAll(response.getMessages());
             if (response.getNextPageToken() != null) {
                 String pageToken = response.getNextPageToken();
