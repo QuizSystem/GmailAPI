@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
-    private TestActivity mActivity;
+    private ListActivity mActivity;
     private GoogleAccountCredential credential;
 
     private static final String USER_ID = "me";
@@ -29,7 +29,7 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
     private static final String SUBJECT = "My title";
     private static final String BODY = "This email is from Thieu Mao";
 
-    ApiAsyncTask(TestActivity activity, GoogleAccountCredential credential) {
+    ApiAsyncTask(ListActivity activity, GoogleAccountCredential credential) {
         this.mActivity = activity;
         this.credential = credential;
     }
@@ -53,8 +53,8 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
         */
 
         try {
-            mActivity.clearResultsText();
-            mActivity.updateResultsText(getDataFromApi());
+//            mActivity.clearResultsText();
+//            mActivity.updateResultsText(getDataFromApi());
 
             List<Message> messages = listAllMessages(USER_ID);
             // TODO: Get all email from inbox
@@ -76,8 +76,8 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
                     TestActivity.REQUEST_AUTHORIZATION);
 
         } catch (Exception e) {
-            mActivity.updateStatus("The following error occurred:\n" +
-                    e.getMessage());
+//            mActivity.updateStatus("The following error occurred:\n" +
+//                    e.getMessage());
         }
         return null;
     }
@@ -110,7 +110,9 @@ public class ApiAsyncTask extends AsyncTask<Void, Void, Void> {
         System.out.println("listMessagesWithLabels");
         ListMessagesResponse response = mActivity.mService.users().messages().list(userId).execute();
         List<Message> messages = new ArrayList<Message>();
-        while (response.getMessages() != null) {
+        int dem = 0;
+        while (response.getMessages() != null && dem < 2) {
+            dem++;
             messages.addAll(response.getMessages());
             if (response.getNextPageToken() != null) {
                 String pageToken = response.getNextPageToken();
