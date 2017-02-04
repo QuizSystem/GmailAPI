@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,7 +33,6 @@ import com.google.api.services.gmail.model.MessagePartHeader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
@@ -44,15 +42,10 @@ public class ListActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     ArrayList<Mail> mails = new ArrayList<Mail>();
 
-    private static final String TAG = ListActivity.class.getSimpleName();
-
     com.google.api.services.gmail.Gmail mService;
-
     GoogleAccountCredential credential;
-
     final HttpTransport transport = AndroidHttp.newCompatibleTransport();
     final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
-
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -71,11 +64,8 @@ public class ListActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int itemPosition = position;
-                String itemValue = (String) lvMailList.getItemAtPosition(position);
-                Toast.makeText(getApplicationContext(),
-                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                        .show();
+                Mail mail = mails.get(position);
+                Toast.makeText(ListActivity.this, "" + mail.getSubject(), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -95,12 +85,12 @@ public class ListActivity extends AppCompatActivity {
 
     public void sendMail(View view){
         Toast.makeText(this, "Send Mail", Toast.LENGTH_SHORT).show();
-        new AsynLoad().execute();
+        Intent intent = new Intent(ListActivity.this, SendActivity.class);
+        startActivity(intent);
     }
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
         super.onResume();
         if (isGooglePlayServicesAvailable()) {
             refreshResults();
@@ -111,17 +101,14 @@ public class ListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
-                Log.d(TAG, "REQUEST_GOOGLE_PLAY_SERVICES");
                 if (resultCode != RESULT_OK) {
                     isGooglePlayServicesAvailable();
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
-                Log.d(TAG, "REQUEST_ACCOUNT_PICKER");
                 if (resultCode == RESULT_OK && data != null &&
                         data.getExtras() != null) {
                     String accountName =
@@ -139,7 +126,6 @@ public class ListActivity extends AppCompatActivity {
                 }
                 break;
             case REQUEST_AUTHORIZATION:
-                Log.d(TAG, "REQUEST_AUTHORIZATION");
                 if (resultCode != RESULT_OK) {
                     chooseAccount();
                 }
@@ -150,8 +136,6 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void refreshResults() {
-        Log.d(TAG, "refreshResults");
-
         if (credential.getSelectedAccountName() == null) {
             chooseAccount();
         } else {
@@ -169,18 +153,12 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private boolean isDeviceOnline() {
-        Log.d(TAG, "isDeviceOnline");
-
-        ConnectivityManager connMgr =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        Log.d(TAG, "deviceOnline: " + (networkInfo != null && networkInfo.isConnected()));
         return (networkInfo != null && networkInfo.isConnected());
     }
 
     private boolean isGooglePlayServicesAvailable() {
-        Log.d(TAG, "isGooglePlayServicesAvailable");
-
         final int connectionStatusCode =
                 GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
@@ -193,7 +171,6 @@ public class ListActivity extends AppCompatActivity {
     }
 
     void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode) {
-        Log.d(TAG, "showGooglePlayServicesAvailabilityErrorDialog");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -221,7 +198,6 @@ public class ListActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             try {
                 List<Message> messages = GmailUtil.listAllMessages(mService, "me", 5);
-                mails.clear();
                 for (int i = 0; i<messages.size() && i<10; i++) {
                     Message messageDetail = GmailUtil.getMessage(mService, "me", messages.get(i).getId(), "full");
                     String content = messageDetail.getSnippet();
