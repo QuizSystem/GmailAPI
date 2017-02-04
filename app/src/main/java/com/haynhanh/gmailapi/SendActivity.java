@@ -24,25 +24,26 @@ import javax.mail.MessagingException;
 
 public class SendActivity extends AppCompatActivity {
 
-    TextView tvTo;
-    EditText etTo, etSubject, etContent;
+    EditText etFrom, etTo, etSubject, etContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send);
-        tvTo = (TextView) findViewById(R.id.tvTo);
+        etFrom = (EditText) findViewById(R.id.etFrom);
         etTo = (EditText) findViewById(R.id.etTo);
         etSubject = (EditText) findViewById(R.id.etSubject);
         etContent = (EditText) findViewById(R.id.etContent);
 
-//        Intent intent = new Intent(SendActivity.this, ListActivity.class);
-//        intent.putExtra("mKQ", mangKetQua);
-//        intent.putExtra("tenTinh", tenTinh);
-//        startActivity(intent);
+        etFrom.setText(ListActivity.FROM);
+        etTo.setText(ListActivity.TO);
+        if (ListActivity.SUBJECT.length() > 0) {
+            etSubject.setText("Reply: " + ListActivity.SUBJECT);
+        }
     }
 
     public void sendMail(View view){
+        ListActivity.FROM = etFrom.getText().toString();
         ListActivity.TO = etTo.getText().toString();
         ListActivity.SUBJECT = etSubject.getText().toString();
         ListActivity.CONTENT = etContent.getText().toString();

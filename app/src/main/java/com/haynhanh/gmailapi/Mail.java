@@ -9,12 +9,14 @@ public class Mail {
     private String subject;
     private String content;
     private String from;
+    private String to;
     private String date;
 
-    public Mail(String subject, String content, String from, String date) {
+    public Mail(String subject, String content, String from, String to, String date) {
         this.subject = subject;
         this.content = content;
         this.from = from;
+        this.to = to;
         this.date = date;
     }
 
@@ -40,6 +42,14 @@ public class Mail {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
     }
 
     public String getDate() {

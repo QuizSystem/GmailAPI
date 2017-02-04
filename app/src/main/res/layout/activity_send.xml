@@ -12,6 +12,22 @@
     tools:context="com.haynhanh.gmailapi.SendActivity">
 
     <TextView
+        android:text="From:"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvFrom"
+        android:textStyle="normal|bold"
+        android:textSize="18sp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/etFrom"
+        android:hint="Email ..." />
+
+    <TextView
         android:text="To:"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

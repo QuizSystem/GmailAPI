@@ -62,33 +62,6 @@ public class GmailUtil {
         } else {
             message = service.users().messages().get(userId, messageId).execute();
         }
-
-//        System.out.println("Message snippet: " + message.getSnippet());
-//        System.out.println("-----------------------------------------------****");
-//        System.out.println("Message raw: " + Util.base64UrlDecode(message.getRaw()));
-//        System.out.println("Message raw Base64 android: " + Base64.encodeBase64URLSafeString(message.decodeRaw()));
-//        System.out.println("-----------------------------------------------****");
-//        Log.e("mao", "mao message.getSnippet " + message.getSnippet()); // noi dung mail
-//        Log.e("mao", "mao Util.base64UrlDecode " + Util.base64UrlDecode(message.getRaw()));
-//        Log.e("mao", "mao Base64.encodeBase64URLSafeString " + Base64.encodeBase64URLSafeString(message.decodeRaw() ));
-//        String raw = Util.base64UrlDecode(message.getRaw());
-//        String[] parts = raw.split("\n");
-//        for (int i=0; i<parts.length && i < 50; i++) {
-//            Log.e("cat","cat" + i + " " + parts[i]);
-//            if(parts[i].startsWith("Subject: ")){
-//                Log.e("Subject", "Mao Subject: " + parts[i]);
-//            }
-//            if(parts[i].startsWith("From:")){
-//                Log.e("From", "Mao From: " + parts[i]);
-//            }
-//            if(parts[i].startsWith("To: ")){
-//                Log.e("To", "Mao To: " + parts[i]);
-//            }
-//            if(parts[i].startsWith("Date: ")){
-//                Log.e("Date", "Mao Date: " + parts[i]);
-//            }
-//        }
-//        Log.e("mao", "mao noi dung mail " + message.getSnippet());
         return message;
     }
 
@@ -148,10 +121,12 @@ public class GmailUtil {
         ListMessagesResponse response;// = service.users().messages().list(userId).execute();
 //        System.out.println("messages");
 //        System.out.println(response.getMessages());
+        List labelIds = new ArrayList();
+        labelIds.add("INBOX");
         if (max < 1) {
-            response = service.users().messages().list(userId).execute();
+            response = service.users().messages().list(userId).setLabelIds(labelIds).execute();
         } else {
-            response = service.users().messages().list(userId).setMaxResults(max).execute();
+            response = service.users().messages().list(userId).setLabelIds(labelIds).setMaxResults(max).execute();
         }
 
 
@@ -183,7 +158,8 @@ public class GmailUtil {
         List<String> labelsStr = new ArrayList();
 
         try {
-            listResponse = service.users().labels().list(userId).execute();List<Label> labels = listResponse.getLabels();
+            listResponse = service.users().labels().list(userId).execute();
+            List<Label> labels = listResponse.getLabels();
 
             if (labels.size() == 0) {
                 System.out.println("No labels found.");
