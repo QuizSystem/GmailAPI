@@ -6,26 +6,24 @@ package com.haynhanh.gmailapi;
 
 public class Mail {
 
-    private String title;
+    private String subject;
     private String content;
     private String from;
-    private String to;
     private String date;
 
-    public Mail(String title, String content, String from, String to, String date) {
-        this.title = title;
+    public Mail(String subject, String content, String from, String date) {
+        this.subject = subject;
         this.content = content;
         this.from = from;
-        this.to = to;
         this.date = date;
     }
 
-    public String getTitle() {
-        return title;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public String getContent() {
@@ -42,14 +40,6 @@ public class Mail {
 
     public void setFrom(String from) {
         this.from = from;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
     }
 
     public String getDate() {

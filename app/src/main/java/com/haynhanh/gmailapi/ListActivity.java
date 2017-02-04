@@ -2,6 +2,7 @@ package com.haynhanh.gmailapi;
 
 import android.accounts.AccountManager;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,13 +11,11 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -29,8 +28,8 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.gmail.GmailScopes;
-import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
+import com.google.api.services.gmail.model.MessagePartHeader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,14 +39,16 @@ import java.util.List;
 public class ListActivity extends AppCompatActivity {
 
     ListView lvMailList;
+    List values;
+    ArrayAdapter<String> adapter;
+    ProgressDialog progressDialog;
 
     private static final String TAG = ListActivity.class.getSimpleName();
 
     com.google.api.services.gmail.Gmail mService;
 
     GoogleAccountCredential credential;
-//    private TextView mStatusText;
-//    private TextView mResultsText;
+
     final HttpTransport transport = AndroidHttp.newCompatibleTransport();
     final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
@@ -62,17 +63,18 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         lvMailList = (ListView) findViewById(R.id.lvMailList);
+        values = new ArrayList();
         // TODO: Test Email List
-        String[] values = new String[] { "Android List View",
-                "Adapter implementation",
-                "Simple List View In Android",
-                "Create List View Android",
-                "Android Example",
-                "List View Source Code",
-                "List View Array Adapter",
-                "Android Example List View"
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+//        String[] values = new String[] { "Android List View",
+//                "Adapter implementation",
+//                "Simple List View In Android",
+//                "Create List View Android",
+//                "Android Example",
+//                "List View Source Code",
+//                "List View Array Adapter",
+//                "Android Example List View"
+//        };
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, values);
         lvMailList.setAdapter(adapter);
         // Event Click
         lvMailList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -103,13 +105,9 @@ public class ListActivity extends AppCompatActivity {
 
     public void sendMail(View view){
         Toast.makeText(this, "Send Mail", Toast.LENGTH_SHORT).show();
-        new AsynLoad(this, credential).execute();
+        new AsynLoad().execute();
     }
 
-    /**
-     * Called whenever this activity is pushed to the foreground, such as after
-     * a call to onCreate().
-     */
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume");
@@ -117,26 +115,13 @@ public class ListActivity extends AppCompatActivity {
         if (isGooglePlayServicesAvailable()) {
             refreshResults();
         } else {
-//            mStatusText.setText("Google Play Services required: " +
-//                    "after installing, close and relaunch this app.");
+            Toast.makeText(this, "Google Play Services required: after installing, close and relaunch this app.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /**
-     * Called when an activity launched here (specifically, AccountPicker
-     * and authorization) exits, giving you the requestCode you started it with,
-     * the resultCode it returned, and any additional data from it.
-     * @param requestCode code indicating which activity result is incoming.
-     * @param resultCode code indicating the result of the incoming
-     *     activity result.
-     * @param data Intent (containing result data) returned by incoming
-     *     activity result.
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         Log.d(TAG, "onActivityResult");
-
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
@@ -160,7 +145,7 @@ public class ListActivity extends AppCompatActivity {
                         editor.commit();
                     }
                 } else if (resultCode == RESULT_CANCELED) {
-//                    mStatusText.setText("Account unspecified.");
+                    Toast.makeText(this, "Account unspecified.", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_AUTHORIZATION:
@@ -181,54 +166,12 @@ public class ListActivity extends AppCompatActivity {
             chooseAccount();
         } else {
             if (isDeviceOnline()) {
-//                new ApiAsyncTask(this, credential).execute();
+                new AsynLoad().execute();
             } else {
-//                mStatusText.setText("No network connection available.");
+                Toast.makeText(this, "No network connection available.", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
-//    public void clearResultsText() {
-//        Log.d(TAG, "clearResultsText");
-//
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                mStatusText.setText("Retrieving data…");
-//                mResultsText.setText("");
-//            }
-//        });
-//    }
-
-//    public void updateResultsText(final List<String> dataStrings) {
-//        Log.d(TAG, "updateResultsText");
-//
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (dataStrings == null) {
-//                    mStatusText.setText("Error retrieving data!");
-//                } else if (dataStrings.size() == 0) {
-//                    mStatusText.setText("No data found.");
-//                } else {
-//                    mStatusText.setText("Data retrieved using" +
-//                            " the Gmail API:");
-//                    mResultsText.setText(TextUtils.join("\n\n", dataStrings));
-//                }
-//            }
-//        });
-//    }
-
-//    public void updateStatus(final String message) {
-//        Log.d(TAG, "updateStatus");
-//
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                mStatusText.setText(message);
-//            }
-//        });
-//    }
 
     private void chooseAccount() {
         startActivityForResult(
@@ -261,7 +204,6 @@ public class ListActivity extends AppCompatActivity {
 
     void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode) {
         Log.d(TAG, "showGooglePlayServicesAvailabilityErrorDialog");
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -276,45 +218,45 @@ public class ListActivity extends AppCompatActivity {
 
     private class AsynLoad extends AsyncTask<Void, Void, Boolean> {
 
-        private ListActivity mActivity;
-        private GoogleAccountCredential credential;
+        List<Mail> mails = new ArrayList<Mail>();
 
-        List<Message> messages = new ArrayList<Message>();
-
-        AsynLoad(ListActivity activity, GoogleAccountCredential credential) {
-            this.mActivity = activity;
-            this.credential = credential;
-            messages = new ArrayList<Message>();
-        }
-
-        public List<Message> listAllMessages(String userId) throws IOException {
-            System.out.println("listMessagesWithLabels");
-            ListMessagesResponse response = mActivity.mService.users().messages().list(userId).execute();
-            List<Message> messages = new ArrayList<Message>();
-            int dem = 0;
-            while (response.getMessages() != null && dem < 2) {
-                dem++;
-                messages.addAll(response.getMessages());
-                if (response.getNextPageToken() != null) {
-                    String pageToken = response.getNextPageToken();
-                    response = mActivity.mService.users().messages().list(userId)
-                            .setPageToken(pageToken).execute();
-                } else {
-                    break;
-                }
-            }
-            return messages;
-        }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            mails.clear();
+            progressDialog = new ProgressDialog(ListActivity.this);
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                messages = listAllMessages("me");
+                List<Message> messages = GmailUtil.listAllMessages(mService, "me", 5);
+                for (int i = 0; i<messages.size() && i<10; i++) {
+                    Message messageDetail = GmailUtil.getMessage(mService, "me", messages.get(i).getId(), "full");
+                    String content = messageDetail.getSnippet();
+                    String subject = "";
+                    String from = "";
+                    String date = "";
+                    List<MessagePartHeader> messagePartHeader = messageDetail.getPayload().getHeaders();
+                    for (int j = 0; j<messagePartHeader.size(); j++) {
+                        if (messagePartHeader.get(j).getName().equals("Subject")) {
+                            subject = messagePartHeader.get(j).getValue();
+                        }
+                        if (messagePartHeader.get(j).getName().equals("From")) {
+                            from = messagePartHeader.get(j).getValue();
+                        }
+                        if (messagePartHeader.get(j).getName().equals("Date")) {
+                            date = messagePartHeader.get(j).getValue();
+                        }
+                    }
+                    if (subject.length() > 0 && content.length() > 0 && from.length() > 0 && date.length() > 0) {
+                        Mail mail = new Mail(subject, content, from, date);
+                        mails.add(mail);
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -324,13 +266,12 @@ public class ListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            for (Message message : messages) {
-                try {
-                    Log.e("mao", "mao " + message.toPrettyString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            progressDialog.dismiss();
+            values.clear();
+            for (Mail mail : mails) {
+                values.add(mail.getFrom());
             }
+            adapter.notifyDataSetChanged();
         }
 
     }
