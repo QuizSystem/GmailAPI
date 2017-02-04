@@ -34,14 +34,15 @@ import com.google.api.services.gmail.model.MessagePartHeader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
 
     ListView lvMailList;
-    List values;
-    ArrayAdapter<String> adapter;
+    MailAdapter adapter;
     ProgressDialog progressDialog;
+    ArrayList<Mail> mails = new ArrayList<Mail>();
 
     private static final String TAG = ListActivity.class.getSimpleName();
 
@@ -63,18 +64,7 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         lvMailList = (ListView) findViewById(R.id.lvMailList);
-        values = new ArrayList();
-        // TODO: Test Email List
-//        String[] values = new String[] { "Android List View",
-//                "Adapter implementation",
-//                "Simple List View In Android",
-//                "Create List View Android",
-//                "Android Example",
-//                "List View Source Code",
-//                "List View Array Adapter",
-//                "Android Example List View"
-//        };
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+        adapter = new MailAdapter(ListActivity.this, mails);
         lvMailList.setAdapter(adapter);
         // Event Click
         lvMailList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -218,9 +208,6 @@ public class ListActivity extends AppCompatActivity {
 
     private class AsynLoad extends AsyncTask<Void, Void, Boolean> {
 
-        List<Mail> mails = new ArrayList<Mail>();
-
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -234,6 +221,7 @@ public class ListActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             try {
                 List<Message> messages = GmailUtil.listAllMessages(mService, "me", 5);
+                mails.clear();
                 for (int i = 0; i<messages.size() && i<10; i++) {
                     Message messageDetail = GmailUtil.getMessage(mService, "me", messages.get(i).getId(), "full");
                     String content = messageDetail.getSnippet();
@@ -267,10 +255,6 @@ public class ListActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             progressDialog.dismiss();
-            values.clear();
-            for (Mail mail : mails) {
-                values.add(mail.getFrom());
-            }
             adapter.notifyDataSetChanged();
         }
 
