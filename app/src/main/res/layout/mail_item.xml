@@ -4,6 +4,13 @@
     android:layout_height="wrap_content">
 
     <TextView
+        android:text="Subject: My Subject"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvSubject" />
+
+    <TextView
         android:text="From: motmao@gmail.com"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -11,15 +18,10 @@
 
     <TextView
         android:text="Date: 13/07/2006"
+        android:textStyle="italic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tvDate" />
-
-    <TextView
-        android:text="Subject: My Subject"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvSubject" />
 
     <TextView
         android:text="Content: This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. This is my content. "
