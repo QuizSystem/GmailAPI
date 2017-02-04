@@ -224,9 +224,9 @@ public class ListActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                List<Message> messages = GmailUtil.listAllMessages(mService, "me", 5);
+                List<Message> messages = GmailUtil.listAllMessages(mService, "me", 20);
                 mails.clear();
-                for (int i = 0; i < messages.size() && i < 10; i++) {
+                for (int i = 0; i < messages.size(); i++) {
                     Message messageDetail = GmailUtil.getMessage(mService, "me", messages.get(i).getId(), "full");
                     String content = messageDetail.getSnippet();
                     String subject = "";

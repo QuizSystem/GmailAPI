@@ -49,8 +49,6 @@ public class GmailUtil {
     public static Message sendMessage(Gmail service, String userId, MimeMessage emailContent) throws MessagingException, IOException {
         Message message = createMessageWithEmail(emailContent);
         message = service.users().messages().send(userId, message).execute();
-        System.out.println("Message id: " + message.getId());
-        System.out.println(message.toPrettyString());
         return message;
     }
 
@@ -79,24 +77,12 @@ public class GmailUtil {
                 break;
             }
         }
-
-        for (Message message : messages) {
-            System.out.println(message.toPrettyString());
-        }
-
         return messages;
     }
 
     public static List<Message> listMessagesWithLabels(Gmail service, String userId, List<String> labelIds) throws IOException {
-        System.out.println("listMessagesWithLabels");
-        ListMessagesResponse resp = service.users().messages().list(userId).execute();
-        System.out.println("messages");
-        System.out.println(resp.getMessages());
-
-
         ListMessagesResponse response = service.users().messages().list(userId)
                 .setLabelIds(labelIds).execute();
-
         List<Message> messages = new ArrayList<Message>();
         while (response.getMessages() != null) {
             messages.addAll(response.getMessages());
@@ -108,19 +94,11 @@ public class GmailUtil {
                 break;
             }
         }
-
-        for (Message message : messages) {
-            System.out.println(message.toPrettyString());
-        }
-
         return messages;
     }
 
     public static List<Message> listAllMessages(Gmail service, String userId, long max) throws IOException {
-//        System.out.println("listMessagesWithLabels");
-        ListMessagesResponse response;// = service.users().messages().list(userId).execute();
-//        System.out.println("messages");
-//        System.out.println(response.getMessages());
+        ListMessagesResponse response;
         List labelIds = new ArrayList();
         labelIds.add("INBOX");
         if (max < 1) {
@@ -128,27 +106,10 @@ public class GmailUtil {
         } else {
             response = service.users().messages().list(userId).setLabelIds(labelIds).setMaxResults(max).execute();
         }
-
-
         List<Message> messages = new ArrayList<Message>();
         if (response.getMessages() != null) {
             messages.addAll(response.getMessages());
         }
-//        while (response.getMessages() != null) {
-//            messages.addAll(response.getMessages());
-//            if (response.getNextPageToken() != null) {
-//                String pageToken = response.getNextPageToken();
-//                response = service.users().messages().list(userId)
-//                        .setPageToken(pageToken).execute();
-//            } else {
-//                break;
-//            }
-//        }
-
-//        for (Message message : messages) {
-//            System.out.println(message.toPrettyString());
-//        }
-
         return messages;
     }
 
@@ -160,7 +121,6 @@ public class GmailUtil {
         try {
             listResponse = service.users().labels().list(userId).execute();
             List<Label> labels = listResponse.getLabels();
-
             if (labels.size() == 0) {
                 System.out.println("No labels found.");
             } else {
@@ -173,7 +133,6 @@ public class GmailUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return labelsStr;
     }
 
