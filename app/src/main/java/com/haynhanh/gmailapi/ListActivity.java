@@ -35,12 +35,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 public class ListActivity extends AppCompatActivity {
 
     ListView lvMailList;
     MailAdapter adapter;
     ProgressDialog progressDialog;
     ArrayList<Mail> mails = new ArrayList<Mail>();
+
+    static String TO = "";
+    static String SUBJECT = "";
+    static String CONTENT = "";
 
     com.google.api.services.gmail.Gmail mService;
     GoogleAccountCredential credential;
@@ -49,8 +56,8 @@ public class ListActivity extends AppCompatActivity {
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-    private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = {GmailScopes.MAIL_GOOGLE_COM, Scopes.PLUS_LOGIN};
+    protected static final String PREF_ACCOUNT_NAME = "accountName";
+    protected static final String[] SCOPES = {GmailScopes.MAIL_GOOGLE_COM, Scopes.PLUS_LOGIN};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +91,10 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void sendMail(View view){
-        Toast.makeText(this, "Send Mail", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(ListActivity.this, SendActivity.class);
-        startActivity(intent);
+//        Toast.makeText(this, "Send Mail", Toast.LENGTH_SHORT).show();
+//        Intent intent = new Intent(ListActivity.this, SendActivity.class);
+//        startActivity(intent);
+        new AsynSend().execute();
     }
 
     @Override
@@ -140,7 +148,12 @@ public class ListActivity extends AppCompatActivity {
             chooseAccount();
         } else {
             if (isDeviceOnline()) {
-                new AsynLoad().execute();
+                if (TO.length() > 0 && SUBJECT.length() > 0 && CONTENT.length() > 0) {
+                    new AsynSend().execute();
+                } else {
+                    // get inbox
+                    new AsynLoad().execute();
+                }
             } else {
                 Toast.makeText(this, "No network connection available.", Toast.LENGTH_SHORT).show();
             }
@@ -232,6 +245,49 @@ public class ListActivity extends AppCompatActivity {
             super.onPostExecute(result);
             progressDialog.dismiss();
             adapter.notifyDataSetChanged();
+        }
+
+    }
+
+    private class AsynSend extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mails.clear();
+            progressDialog = new ProgressDialog(ListActivity.this);
+            progressDialog.setMessage("Send mail...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String TO = "leoski94@gmail.com";
+            String FROM = "thieumao@gmail.com";
+            String SUBJECT = "My title dfs 2";
+            String BODY = "This email is from Thieu Mao 2";
+            try {
+                Message message = GmailUtil.sendMessage(mService, "me", GmailUtil.createEmail(TO, FROM, SUBJECT, BODY));
+                if (message != null) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            progressDialog.dismiss();
+            if (result == true) {
+                Toast.makeText(ListActivity.this, "Send OK", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ListActivity.this, "Send Error", Toast.LENGTH_SHORT).show();
+            }
         }
 
     }
