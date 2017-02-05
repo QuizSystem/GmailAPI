@@ -65,8 +65,6 @@ public class MainActivity extends Activity
     Boolean isFirst = true;
 
     GoogleAccountCredential mCredential;
-//    private TextView mOutputText;
-//    private Button mCallApiButton;
     ProgressDialog mProgress;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -74,7 +72,6 @@ public class MainActivity extends Activity
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-//    private static final String BUTTON_TEXT = "Call Gmail API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS, GmailScopes.MAIL_GOOGLE_COM, Scopes.PLUS_LOGIN };
 
@@ -124,7 +121,6 @@ public class MainActivity extends Activity
         } else if (! isDeviceOnline()) {
 //            mOutputText.setText("No network connection available.");
         } else {
-//            new MakeRequestTask(mCredential).execute();
             if (SUBJECT.length() > 0 && CONTENT.length() > 0 && FROM.length() > 0 && TO.length() > 0) {
                 new MainActivity.AsynSend(mCredential).execute();
             } else {
@@ -137,7 +133,6 @@ public class MainActivity extends Activity
     }
 
     public void sendMail(View view) {
-//        getResultsFromApi();
         Toast.makeText(this, "Send Mail", Toast.LENGTH_SHORT).show();
         openSendActivity();
     }
@@ -412,7 +407,6 @@ public class MainActivity extends Activity
     private class AsynSend extends AsyncTask<Void, Void, Boolean> {
 
         private com.google.api.services.gmail.Gmail mService = null;
-        private Exception mLastError = null;
 
         AsynSend(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
