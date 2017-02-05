@@ -35,18 +35,18 @@ public class SendActivity extends AppCompatActivity {
         etSubject = (EditText) findViewById(R.id.etSubject);
         etContent = (EditText) findViewById(R.id.etContent);
 
-        etFrom.setText(ListActivity.FROM);
-        etTo.setText(ListActivity.TO);
-        if (ListActivity.SUBJECT.length() > 0) {
-            etSubject.setText("Reply: " + ListActivity.SUBJECT);
+        etFrom.setText(MainActivity.FROM);
+        etTo.setText(MainActivity.TO);
+        if (MainActivity.SUBJECT.length() > 0) {
+            etSubject.setText("Reply: " + MainActivity.SUBJECT);
         }
     }
 
     public void sendMail(View view){
-        ListActivity.FROM = etFrom.getText().toString();
-        ListActivity.TO = etTo.getText().toString();
-        ListActivity.SUBJECT = etSubject.getText().toString();
-        ListActivity.CONTENT = etContent.getText().toString();
+        MainActivity.FROM = etFrom.getText().toString();
+        MainActivity.TO = etTo.getText().toString();
+        MainActivity.SUBJECT = etSubject.getText().toString();
+        MainActivity.CONTENT = etContent.getText().toString();
         finish();
     }
 
