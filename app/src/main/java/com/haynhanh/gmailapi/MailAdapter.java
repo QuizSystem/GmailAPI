@@ -45,11 +45,15 @@ public class MailAdapter extends BaseAdapter {
         TextView tvDate = (TextView) itemView.findViewById(R.id.tvDate);
         TextView tvSubject = (TextView) itemView.findViewById(R.id.tvSubject);
         TextView tvContent = (TextView) itemView.findViewById(R.id.tvContent);
-        Mail mail = mails.get(position);
-        tvFrom.setText(mail.getFrom());
-        tvDate.setText(mail.getDate());
-        tvSubject.setText(mail.getSubject());
-        tvContent.setText(mail.getContent());
+        try {
+            Mail mail = mails.get(position);
+            tvFrom.setText(mail.getFrom());
+            tvDate.setText(mail.getDate());
+            tvSubject.setText(mail.getSubject());
+            tvContent.setText(mail.getContent());
+        } catch (Exception e) {
+
+        }
         return itemView;
     }
 }
